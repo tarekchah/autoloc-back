@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
 @Ignore("Test d'un ancien atelier : désactivé (écrit dans la vraie base)")
@@ -39,7 +40,7 @@ public class AgenceTests {
     private IAgenceService agenceService;
 
 
-    private void addAgence(CrudRepository<Agence , Long> repository){
+    private Agence addAgence(CrudRepository<Agence , Long> repository){
 
         int valeur = (int) System.currentTimeMillis();
 
@@ -66,10 +67,10 @@ public class AgenceTests {
         v2.setTarifJournalier(new BigDecimal(80));
 
         a.setVehicules(Set.of(v1,v2));
-        repository.save(a);
+        return repository.save(a);
     }
 
-    private void loadAgence(CrudRepository repository, String typeDepot) {
+    private String loadAgence(CrudRepository repository, String typeDepot) {
         Iterable<Agence> agences = repository.findAll();
 
         StringBuilder sb = new StringBuilder();
@@ -104,27 +105,34 @@ public class AgenceTests {
         }
 
         System.out.println(sb);
+        return sb.toString();
     }
 
     @Test
     public void basicAddAgence() {
-        addAgence(basicAgenceRepository);
+        Agence creee = addAgence(basicAgenceRepository);
+        assertNotNull("L'agence doit être enregistrée", creee);
+        assertEquals("Agence ariana", creee.getNom());
     }
 
     @Test
     public void fullAddAgence() {
-        addAgence(fullAgenceRepository);
+        Agence creee = addAgence(fullAgenceRepository);
+        assertNotNull("L'identifiant doit être généré", creee.getIdAgence());
+        assertEquals("Agence ariana", creee.getNom());
     }
 
 
     @Test
     public void basicLoadAgence() {
-        loadAgence(basicAgenceRepository, "Basic Repository Mock");
+        String rapport = loadAgence(basicAgenceRepository, "Basic Repository Mock");
+        assertTrue("Le rapport doit indiquer le dépôt utilisé", rapport.startsWith("Type de dépôt utilisé : Basic Repository Mock"));
     }
 
     @Test
     public void fullLoadAgence() {
-        loadAgence(fullAgenceRepository, "Full Repository");
+        String rapport = loadAgence(fullAgenceRepository, "Full Repository");
+        assertTrue("Le rapport doit indiquer le dépôt utilisé", rapport.startsWith("Type de dépôt utilisé : Full Repository"));
     }
 
 
@@ -135,6 +143,7 @@ public class AgenceTests {
                         Sort.by(Sort.Direction.DESC, "idAgence")
                 );
 
+        Long precedent = null;
         for (Agence agence : agences) {
             System.out.println("ID : " + agence.getIdAgence());
             System.out.println("Nom : " + agence.getNom());
@@ -142,6 +151,10 @@ public class AgenceTests {
             System.out.println("Ville : " + agence.getVille());
             System.out.println("Téléphone : " + agence.getTelephone());
             System.out.println("-------------------------");
+            if (precedent != null) {
+                assertTrue("Les agences doivent être triées par id décroissant", precedent > agence.getIdAgence());
+            }
+            precedent = agence.getIdAgence();
         }
     }
 
@@ -171,6 +184,7 @@ public class AgenceTests {
             );
 
             page = fullAgenceRepository.findAll(pageable);
+            assertTrue("Une page ne dépasse pas sa taille", page.getContent().size() <= taillePage);
 
             System.out.println("\n========== Page " + (i + 1) + " ==========");
 
