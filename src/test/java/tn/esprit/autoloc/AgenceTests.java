@@ -1,5 +1,6 @@
 package tn.esprit.autoloc;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
+@Ignore("Test d'un ancien atelier : désactivé (écrit dans la vraie base)")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class AgenceTests {

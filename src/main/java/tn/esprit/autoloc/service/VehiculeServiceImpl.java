@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> implements IVehiculeService {
 
-    // Spring injecte tous les beans OffreStrategy : clé = nom du bean (STANDARD, WEEKEND, LONGUE_DUREE)
+    // Spring injecte tous les beans OffreStrategy : clé = nom du bean (standard, weekend, longueDuree)
     private final Map<String, OffreStrategy> offres;
     private final IAgenceRepository agenceRepository;
     private final IEquipementRepository equipementRepository;
@@ -63,7 +63,7 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
 
     @Override
     public double calculTarif(Vehicule vehicule, int nbJours, VehiculeOffre offre) {
-        OffreStrategy strategie = offres.get(offre.name());
+        OffreStrategy strategie = offres.get(offre.getNomBean());
         if (strategie == null) {
             throw new IllegalArgumentException("Offre non supportée : " + offre);
         }
