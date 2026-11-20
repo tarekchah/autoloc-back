@@ -47,15 +47,18 @@ abstract class GenericServiceTestBase<T, K> {
         T entite = valide();
         setId(entite, id());
 
-        assertThrows(IllegalArgumentException.class, () -> service().create(entite));
+        GenericServiceImpl<T, K> service = service();
+
+        assertThrows(IllegalArgumentException.class, () -> service.create(entite));
         verify(repository(), never()).save(any());
     }
 
     @Test
     void create_champObligatoireManquant_estRefusee() {
         T entite = invalide();
+        GenericServiceImpl<T, K> service = service();
 
-        assertThrows(IllegalArgumentException.class, () -> service().create(entite));
+        assertThrows(IllegalArgumentException.class, () -> service.create(entite));
         verify(repository(), never()).save(any());
     }
 
@@ -71,8 +74,10 @@ abstract class GenericServiceTestBase<T, K> {
     @Test
     void findById_inconnu_leveResourceNotFound() {
         when(repository().findById(id())).thenReturn(Optional.empty());
+        GenericServiceImpl<T, K> service = service();
+        K id = id();
 
-        assertThrows(ResourceNotFoundException.class, () -> service().findById(id()));
+        assertThrows(ResourceNotFoundException.class, () -> service.findById(id));
     }
 
     @Test
@@ -113,8 +118,10 @@ abstract class GenericServiceTestBase<T, K> {
     void update_inconnu_leveResourceNotFound() {
         when(repository().findById(id())).thenReturn(Optional.empty());
         T nouvelle = modifiee();
+        GenericServiceImpl<T, K> service = service();
+        K id = id();
 
-        assertThrows(ResourceNotFoundException.class, () -> service().update(id(), nouvelle));
+        assertThrows(ResourceNotFoundException.class, () -> service.update(id, nouvelle));
         verify(repository(), never()).save(any());
     }
 
@@ -122,8 +129,10 @@ abstract class GenericServiceTestBase<T, K> {
     void update_champObligatoireManquant_estRefusee() {
         when(repository().findById(id())).thenReturn(Optional.of(valide()));
         T incorrecte = invalide();
+        GenericServiceImpl<T, K> service = service();
+        K id = id();
 
-        assertThrows(IllegalArgumentException.class, () -> service().update(id(), incorrecte));
+        assertThrows(IllegalArgumentException.class, () -> service.update(id, incorrecte));
         verify(repository(), never()).save(any());
     }
 
@@ -140,8 +149,10 @@ abstract class GenericServiceTestBase<T, K> {
     @Test
     void deleteById_inconnu_leveResourceNotFound() {
         when(repository().existsById(id())).thenReturn(false);
+        GenericServiceImpl<T, K> service = service();
+        K id = id();
 
-        assertThrows(ResourceNotFoundException.class, () -> service().deleteById(id()));
+        assertThrows(ResourceNotFoundException.class, () -> service.deleteById(id));
         verify(repository(), never()).deleteById(any());
     }
 }

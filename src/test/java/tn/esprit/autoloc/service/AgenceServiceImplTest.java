@@ -137,7 +137,9 @@ class AgenceServiceImplTest extends GenericServiceTestBase<Agence, Long> {
     void updateAvecEmployes_agenceInconnue_neCreeAucunEmploye() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> service.updateAvecEmployes(1L, modifiee()));
+        Agence entree = modifiee();
+
+        assertThrows(RuntimeException.class, () -> service.updateAvecEmployes(1L, entree));
         verifyNoInteractions(employeService);
     }
 

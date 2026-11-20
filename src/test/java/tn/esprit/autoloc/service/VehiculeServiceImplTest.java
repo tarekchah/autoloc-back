@@ -93,7 +93,7 @@ class VehiculeServiceImplTest extends GenericServiceTestBase<Vehicule, Long> {
 
     @Test
     void calculTarif_longueDureeAuDessusDe2000_ajouteRemise5pourcent() {
-        // 300 * 0,75 * 10 = 2250 > 2000  =>  2250 * 0,95
+        // Calcul attendu : 300 x 0,75 x 10 donne 2250, supérieur à 2000, donc 5 % de remise en plus
         assertEquals(2137.5, service.calculTarif(vehicule("TU-300", "300"), 10, VehiculeOffre.LONGUE_DUREE), 0.001);
     }
 
@@ -101,8 +101,10 @@ class VehiculeServiceImplTest extends GenericServiceTestBase<Vehicule, Long> {
     void calculTarif_offreSansStrategie_leveIllegalArgument() {
         VehiculeServiceImpl sansOffres = new VehiculeServiceImpl(repository, Map.of(), agenceRepository, equipementRepository);
 
+        Vehicule vehicule = valide();
+
         assertThrows(IllegalArgumentException.class,
-                () -> sansOffres.calculTarif(valide(), 3, VehiculeOffre.STANDARD));
+                () -> sansOffres.calculTarif(vehicule, 3, VehiculeOffre.STANDARD));
     }
 
     // ---------- affectations ----------
